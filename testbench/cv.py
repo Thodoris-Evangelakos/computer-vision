@@ -20,7 +20,7 @@ class Net(nn.Module):
     def __init__(self, cl_num: int, fc_num: int, pl_num: int):
         super(Net, self).__init__()
         
-        in_channel_cond = lambda i: INPUT_CHANNELS if i == 0 else 16*(2**(i-1))
+        in_channel_cond = lambda i: INPUT_CHANNELS if i == 0 else 32*(2**(i-1))
         
         self.conv_layers = nn.ModuleList()
         for i in range(cl_num):
