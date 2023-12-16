@@ -19,6 +19,8 @@ PADDING = 1
 POOL_KERNEL_SIZE = 2
 POOL_STRIDE = 2
 
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
 class Net(nn.Module):
     def __init__(self, cl_num: int, fc_num: int, pl_num: int):
         super(Net, self).__init__()
@@ -38,10 +40,12 @@ class Net(nn.Module):
 
         in_features = lambda i: flattened_size if i == 0 else 512 // (2 ** (i-1))
 
+        #self.to(device)
+
         self.fully_conn_layers = nn.ModuleList()
         for i in range(fc_num):
-             out_features = 512 // (2 ** i)
-             self.fully_conn_layers.append(nn.Linear(in_features(i), out_features))
+            out_features = 512 // (2 ** i)
+            self.fully_conn_layers.append(nn.Linear(in_features(i), out_features))
 
 
     def _get_flattened_size(self, input_size, cl_num):
@@ -82,8 +86,8 @@ def main(cl_num, fc_num, pl_num, num_epochs, trainloader, testloader, optimizer_
         float: Accuracy of the model on the test set.
     """
 
-    # Initialize the network
-    net = Net(cl_num, fc_num, pl_num)
+    # Initialize the network and move it to the chosen device (GPU or CPU)
+    net = Net(cl_num, fc_num, pl_num).to(device)
 
     # Loss and Optimizer
     criterion = nn.CrossEntropyLoss()
@@ -98,6 +102,9 @@ def main(cl_num, fc_num, pl_num, num_epochs, trainloader, testloader, optimizer_
     for epoch in range(num_epochs):
         for _, data in enumerate(trainloader, 0):
             inputs, labels = data
+            # Move data to the device (GPU or CPU)
+            inputs, labels = inputs.to(device), labels.to(device)
+
             optimizer.zero_grad()
             outputs = net(inputs)
             loss = criterion(outputs, labels)
@@ -110,6 +117,9 @@ def main(cl_num, fc_num, pl_num, num_epochs, trainloader, testloader, optimizer_
     with torch.no_grad():
         for data in testloader:
             images, labels = data
+            # Move data to the device (GPU or CPU)
+            images, labels = images.to(device), labels.to(device)
+
             outputs = net(images)
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
