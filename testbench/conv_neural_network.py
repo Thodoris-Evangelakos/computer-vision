@@ -4,6 +4,8 @@ import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
+from tqdm import tqdm
+
 
 #risky
 #import multiprocessing
@@ -98,18 +100,22 @@ def main(cl_num, fc_num, pl_num, num_epochs, trainloader, testloader, optimizer_
     else:
         raise ValueError("Invalid optimizer type. Choose 'adam' or 'sgd'.")
 
-    # Training loop
+    # Training loop with tqdm progress bar
     for epoch in range(num_epochs):
-        for _, data in enumerate(trainloader, 0):
-            inputs, labels = data
-            # Move data to the device (GPU or CPU)
-            inputs, labels = inputs.to(device), labels.to(device)
+        with tqdm(trainloader, desc=f"Epoch {epoch+1}/{num_epochs}") as pbar:
+            for _, data in enumerate(pbar):
+                inputs, labels = data
+                # Move data to the device (GPU or CPU)
+                inputs, labels = inputs.to(device), labels.to(device)
 
-            optimizer.zero_grad()
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
+                optimizer.zero_grad()
+                outputs = net(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
+
+                # Update progress bar with loss information
+                pbar.set_postfix_str(f"Loss: {loss.item():.4f}")
 
     # Evaluate the model
     correct = 0
@@ -127,6 +133,7 @@ def main(cl_num, fc_num, pl_num, num_epochs, trainloader, testloader, optimizer_
 
     accuracy = 100 * correct / total
     return accuracy
+
 
 def load_data_for_model(batch_size=4, num_workers=2):
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))])

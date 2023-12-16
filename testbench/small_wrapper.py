@@ -71,9 +71,10 @@ def gpu_test():
     print("GPU Test")
     print("GPU Available: ", torch.cuda.is_available())
     print("GPU Name: ", torch.cuda.get_device_name(0))
+    print(20*"~")
 
 def menu():
-    print("What do you want to do?\n1   Evaluate model\n2   GPU Test\n3   Exit")
+    print("What do you want to do?\n1   Evaluate model\n2   GPU Testt\n3   Exit")
     choice = input("Enter your choice: ")
     
     match choice:
@@ -86,5 +87,7 @@ def menu():
         case _:
             print("Invalid choice. Try again.")
             menu()
+    menu()
+
 if __name__ == "__main__":
     menu()
