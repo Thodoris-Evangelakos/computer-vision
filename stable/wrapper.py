@@ -1,19 +1,14 @@
+# Importing the necessary libraries and the cnn module.
 import torch
 import torchvision
 import torchvision.transforms as transforms
-#import torch.nn as nn
-#import torch.optim as optim
-#import torch.nn.functional as F
+import cnn
 
-import conv_neural_network as cnn
-
-# Assuming the Net class is defined elsewhere in your code
-# from your_model_file import Net
-
+# Defining the global variables.
 EPOCHS = [2, 4, 6, 8]
-CLS = [2, 4, 6]  # Convolutional Layers
-FCS = 2       # Fully Connected Layers
-PLS = 2       # Pooling Layers
+CLS = [2, 4, 6]
+FCS = 2
+PLS = 2
 
 def load_data_for_model(batch_size=4, num_workers=2):
     """
