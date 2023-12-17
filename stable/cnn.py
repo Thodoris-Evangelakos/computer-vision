@@ -78,7 +78,7 @@ class Net(nn.Module):
     def _get_flattened_size(self, input_size, cl_num):
         size = input_size
         for _ in range(cl_num):
-            size = size // POOL_STRIDE  # Assuming a stride of 2 in pooling
+            size = size // POOL_STRIDE
         output_channels = 32 * (2 ** (cl_num-1)) # Last output_channels value
         flattened_size = size * size * output_channels
         return flattened_size
